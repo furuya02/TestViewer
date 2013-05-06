@@ -57,10 +57,52 @@ namespace TestView{
             }
             richTextBox.Text = sb.ToString();
 
-            //カラー処理
+            //指定した文字列の色を変更する
+            SetColor(richTextBox,Color.MediumOrchid,"expected");
+            SetColor(richTextBox, Color.Blue, "actual");
+            SetColor(richTextBox, Color.Red, "sut");
+            
+            //コメントを指定した色に変更する
+            SetcommentColor(richTextBox, Color.MediumSeaGreen);
 
-            richTextBox.Find("expected",RichTextBoxFinds.Reverse);
-            richTextBox.SelectionColor = Color.Red;
+
+//            richTextBox.Find("expected",RichTextBoxFinds.Reverse);
+//            richTextBox.SelectionColor = Color.Red;
         }
+
+        //指定した文字列の色を変更する
+        void SetColor(RichTextBox richTextBox, Color color, string keyword){
+            int found = -1;
+            while (true) {
+                found = richTextBox.Find(keyword, found + 1, RichTextBoxFinds.MatchCase);
+                if (found >= 0) {
+                    richTextBox.SelectionStart = found;
+                    richTextBox.SelectionLength = keyword.Length;
+                    richTextBox.SelectionColor = color;
+                } else {
+                    break;
+                }
+            }
+        }
+        //コメントを指定した色に変更する
+        void SetcommentColor(RichTextBox richTextBox, Color color) {
+            int start = 0;
+            while (start<richTextBox.Text.Length) {
+                start = richTextBox.Find("//", start, RichTextBoxFinds.MatchCase);
+                if (start >= 0){
+                    int end = richTextBox.Find("\r", start, RichTextBoxFinds.MatchCase);
+                    if (end == -1){
+                        end = richTextBox.Text.Length;
+                    }
+                    richTextBox.SelectionStart = start;
+                    richTextBox.SelectionLength = end-start;
+                    richTextBox.SelectionColor = color;
+                    start = end + 1;
+                } else{
+                    break;
+                }
+            }
+        }
+
     }
 }

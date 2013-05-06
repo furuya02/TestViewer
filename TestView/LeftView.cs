@@ -42,8 +42,10 @@ namespace TestView {
                 }
                 nodes = node.Nodes;
             }
-            TreeNode treeNode = node.Nodes.Add(tmp[tmp.Length - 1]);
-            treeNode.Tag = path;
+            if (node != null){
+                TreeNode treeNode = node.Nodes.Add(tmp[tmp.Length - 1]);
+                treeNode.Tag = path;
+            }
         }
 
 

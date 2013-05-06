@@ -6,50 +6,71 @@ using System.Text;
 using System.Windows.Forms;
 
 namespace TestView {
+    enum ViewStyle{
+        ViewStyle1,
+        ViewStyle2,
+        ViewStyle3
+    }
     class RightView{
-        private ListView _listView;
-        public RightView(ListView listView){
-            _listView = listView;
+        readonly List<OneMethod> _ar = new List<OneMethod>();
+        private ViewStyle _viewStyle = ViewStyle.ViewStyle1;
+        
+        private readonly ListBox _listBox;
+
+        public RightView(ListBox listBox){
+            _listBox = listBox;
         }
 
-        public void Refresh(string fileName){
-            _listView.Items.Clear();
+        public void SetViewStyle(ViewStyle viewStyle){
+            _viewStyle = viewStyle;
 
-            var lines = File.ReadAllLines(fileName);
+            Refresh();
+        }
 
-            List<string> ar = new List<string>();
-            //0 Unknown
-            //1 = [Test]
-            //2 = {TestCase
-            int flg = 0;
+        public void SetFileName(string fileName){
+            _ar.Clear();
 
+            if (fileName != null){
+                var lines = File.ReadAllLines(fileName);
+                OneMethod oneMethod = null;
 
-            foreach (string l in lines){
-                if (flg == 1){
-                    ar.Add(l);
-                    flg = 0;
-                    continue;
-                }
-
-                if (l.IndexOf("[Test]") != -1){
-                    flg = 1;
-                    continue;
-                }
-                if (l.IndexOf("[TestCase") != -1){
-                    ar.Add(l);
-                    flg = 2;
-                    continue;
-                } else{
-                    if (flg == 2){
-                        ar.Add(l);
-                        flg = 0;
-                        continue;
+                foreach (var l in lines){
+                    if (oneMethod == null){
+                        if (l.IndexOf("[Test]") != -1){
+                            oneMethod = new OneMethod(MethodType.Normal);
+                        }
+                        if (l.IndexOf("[TestCase") != -1){
+                            oneMethod = new OneMethod(MethodType.Parameter);
+                            oneMethod.Append(l);
+                        }
+                    } else{
+                        if (oneMethod.Append(l)){
+                            //クラス終了
+                            _ar.Add(oneMethod);
+                            oneMethod = null;
+                        }
                     }
                 }
             }
-            foreach (var a in ar){
-                _listView.Items.Add(a);
-            }
+
+            Refresh();
+
         }
+
+        void Refresh(){
+            _listBox.Items.Clear();
+            foreach (var a in _ar) {
+                _listBox.Items.Add(a.ToString(ViewStyle.ViewStyle1));
+            }
+
+        }
+
+        public OneMethod GetOneMethod(int index){
+            if (_ar != null){
+                return _ar[index];
+            }
+            return null;
+        }
+    
     }
 }

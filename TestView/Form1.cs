@@ -12,11 +12,19 @@ namespace TestView {
         private String _projectDirectory="c:\\tmp2";
         private LeftView _leftView;
         private RightView _rightView;
+
+        private ViewStyle _viewStyle = ViewStyle.ViewStyle1;
+
         
         public Form1() {
             InitializeComponent();
             _leftView = new LeftView(treeView);
-            _rightView = new RightView(listView);
+            _rightView = new RightView(listBox);
+            SetFont(new Font("メイリオ",9));
+
+            //DEBUG
+            _projectDirectory = @"C:\tmp2\bjd5\BJDTest";
+            _leftView.Refresh(_projectDirectory);
         }
 
         private void MainMenuExit_Click(object sender, EventArgs e){
@@ -35,8 +43,34 @@ namespace TestView {
             }
         }
 
-        private void treeView_Click(object sender, EventArgs e){
-            
+        private void MainMenuFont_Click(object sender, EventArgs e) {
+            FontDialog dlg = new FontDialog();
+            if (DialogResult.OK == dlg.ShowDialog()){
+                SetFont(dlg.Font);
+            }
+        }
+
+        void SetFont(Font font){
+            treeView.Font = font;
+            listBox.Font = font;
+            richTextBox.Font = font;
+        }
+
+        private void MainMenuViewStyle1_Click(object sender, EventArgs e) {
+            if (sender == MainMenuViewStyle1){
+                _viewStyle = ViewStyle.ViewStyle1;
+            }else if (sender == MainMenuViewStyle2) {
+                _viewStyle = ViewStyle.ViewStyle2;
+            } else if (sender == MainMenuViewStyle3) {
+                _viewStyle = ViewStyle.ViewStyle3;
+            }
+
+            MainMenuViewStyle1.Checked = _viewStyle == ViewStyle.ViewStyle1;
+            MainMenuViewStyle2.Checked = _viewStyle == ViewStyle.ViewStyle2;
+            MainMenuViewStyle3.Checked = _viewStyle == ViewStyle.ViewStyle3;
+
+            _rightView.SetViewStyle(_viewStyle);
+
         }
 
         private void treeView_AfterSelect(object sender, TreeViewEventArgs e) {
@@ -45,20 +79,29 @@ namespace TestView {
                 return;
             }
             var fileName = (string)node.Tag;
-            if (fileName == null) {
-                return;
+            if (fileName == null){
+                _rightView.SetFileName(null);
+            } else{
+                _rightView.SetFileName(_projectDirectory + "\\" + fileName);
             }
-            _rightView.Refresh(_projectDirectory + "\\" + fileName);
-
+            if (0 < listBox.Items.Count){
+                listBox.SelectedIndex = 0;
+            }
+            listBox_SelectedIndexChanged(null, null);
         }
+        private void listBox_SelectedIndexChanged(object sender, EventArgs e){
+            OneMethod oneMethod = null;
+            int index = listBox.SelectedIndex;
+            if (index != -1){
+                oneMethod = _rightView.GetOneMethod(index);
+            }
+            
+            richTextBox.Clear();
 
-        private void MainMenuFont_Click(object sender, EventArgs e) {
-            FontDialog dlg = new FontDialog();
-            if (DialogResult.OK == dlg.ShowDialog()){
-                treeView.Font = dlg.Font;
-                listView.Font = dlg.Font;
+
+            if (oneMethod != null){
+                oneMethod.Code.Disp(richTextBox);
             }
         }
-
     }
 }

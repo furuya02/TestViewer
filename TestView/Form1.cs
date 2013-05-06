@@ -89,9 +89,11 @@ namespace TestView {
             }
             listBox_SelectedIndexChanged(null, null);
         }
+
+
         private void listBox_SelectedIndexChanged(object sender, EventArgs e){
             OneMethod oneMethod = null;
-            int index = listBox.SelectedIndex;
+            var index = listBox.SelectedIndex;
             if (index != -1){
                 oneMethod = _rightView.GetOneMethod(index);
             }

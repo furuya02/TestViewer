@@ -79,6 +79,9 @@ namespace TestView{
                     richTextBox.SelectionStart = found;
                     richTextBox.SelectionLength = keyword.Length;
                     richTextBox.SelectionColor = color;
+                    //FontをBoldに変更する
+                    var fnt = new Font(richTextBox.SelectionFont.FontFamily, richTextBox.SelectionFont.Size, richTextBox.SelectionFont.Style | FontStyle.Bold);
+                    richTextBox.SelectionFont = fnt;
                 } else {
                     break;
                 }

@@ -59,8 +59,12 @@ namespace TestView {
 
         void Refresh(){
             _listBox.Items.Clear();
-            foreach (var a in _ar) {
-                _listBox.Items.Add(a.ToString(ViewStyle.ViewStyle1));
+            foreach (var a in _ar){
+                foreach (var s in a.GetLines(_viewStyle)) {
+                    _listBox.Items.Add(s);
+                    //var item = (ListViewItem) _listBox.Items[_listBox.Items.Count];
+                    //item.Tag = this;
+                }
             }
 
         }
